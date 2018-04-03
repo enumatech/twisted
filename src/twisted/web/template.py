@@ -34,7 +34,7 @@ from zope.interface import implementer
 
 from xml.sax import make_parser, handler
 
-from twisted.python.compat import NativeStringIO, items
+from twisted.python.compat import NativeStringIO, items, _PY3
 from twisted.python.filepath import FilePath
 from twisted.web._stan import Tag, slot, Comment, CDATA, CharRef
 from twisted.web.iweb import ITemplateLoader
@@ -397,7 +397,10 @@ class XMLString(object):
         @type s: C{str}, or a UTF-8 encoded L{bytes}.
         """
         if not isinstance(s, str):
-            s = s.decode('utf8')
+            if _PY3:
+                s = s.decode('utf8')
+            else:
+                s = s.encode('utf8')
 
         self._loadedTemplate = _flatsaxParse(NativeStringIO(s))
 
